@@ -258,10 +258,15 @@
         </div>
 
         <div class="divider"></div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-sm" onclick="exportKeys()" style="color:var(--dim);border-color:var(--border);">Export JSON</button>
           <button class="btn btn-sm btn-danger" onclick="clearExpired()">Clear Expired</button>
+          <div style="display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap;">
+            <div class="input-wrap" style="max-width:260px"><input type="text" id="server-url" placeholder="http://your-server.com" value=""></div>
+            <button class="btn btn-sm btn-primary" onclick="syncToServer()">Sync to Server</button>
+          </div>
         </div>
+        <div class="msg" id="sync-msg" style="margin-top:12px;"></div>
       </div>
 
     </div>
@@ -450,6 +455,32 @@ function exportKeys() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'spooky_keys.json'; a.click();
 }
+async function syncToServer() {
+  const url = document.getElementById('server-url').value.trim().replace(/\/$/, '');
+  const msg = document.getElementById('sync-msg');
+  msg.className = 'msg'; msg.style.display = 'none';
+  if (!url) { msg.textContent = '✗ enter your server URL first'; msg.className='msg msg-err show'; return; }
+  try {
+    const res = await fetch(url + '/admin/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': ADMIN_PASSWORD },
+      body: JSON.stringify(loadKeys())
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = `✓ synced ${data.count} keys to server`;
+      msg.className = 'msg msg-ok show';
+    } else {
+      msg.textContent = `✗ ${data.message}`;
+      msg.className = 'msg msg-err show';
+    }
+  } catch(e) {
+    msg.textContent = `✗ could not reach server: ${e.message}`;
+    msg.className = 'msg msg-err show';
+  }
+  setTimeout(() => msg.classList.remove('show'), 4000);
+}
+
 function copyKey(id, btn) {
   navigator.clipboard.writeText(document.getElementById(id).textContent);
   btn.textContent = 'Copied!'; btn.classList.add('copied');
