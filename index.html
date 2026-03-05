@@ -3,779 +3,335 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPOOKOLOR</title>
+<title>SPOOKYSTORE</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:      #080a0d;
-    --panel:   #0d1117;
-    --border:  #1a2535;
-    --accent:  #00e5ff;
-    --accent2: #ff3c5a;
-    --gold:    #fbbf24;
-    --dim:     #3a4a5a;
-    --white:   #f0f4f8;
-    --mono:    'Share Tech Mono', monospace;
-    --sans:    'Rajdhani', sans-serif;
+    --bg:     #080a0d;
+    --panel:  #0d1117;
+    --border: #1a2535;
+    --accent: #00e5ff;
+    --purple: #a78bfa;
+    --gold:   #fbbf24;
+    --red:    #ff3c5a;
+    --dim:    #3a4a5a;
+    --white:  #f0f4f8;
+    --mono:   'Share Tech Mono', monospace;
+    --sans:   'Rajdhani', sans-serif;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: var(--sans); overflow-x: hidden; cursor: none; }
 
-  body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: var(--sans);
-    overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* ── custom cursor ── */
-  #cursor {
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    top: 0; left: 0;
-    width: 32px; height: 32px;
-    transform: translate(-50%, -50%);
-    transition: opacity .2s;
-  }
+  #cursor { position: fixed; pointer-events: none; z-index: 9999; top: 0; left: 0; width: 28px; height: 28px; transform: translate(-50%,-50%); transition: transform .15s, opacity .2s; }
   #cursor svg { width: 100%; height: 100%; }
 
-  /* ── grid background ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 48px 48px;
-    opacity: .35;
-    pointer-events: none;
-    z-index: 0;
-  }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; opacity: .3; pointer-events: none; z-index: 0; }
+  body::after { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.06) 2px, rgba(0,0,0,.06) 4px); pointer-events: none; z-index: 1; }
 
-  /* ── scanline overlay ── */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,.08) 2px,
-      rgba(0,0,0,.08) 4px
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  /* ── nav ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 48px;
-    height: 60px;
-    background: rgba(8,10,13,.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  nav::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: .5;
-  }
-  .nav-logo {
-    font-family: var(--mono);
-    font-size: 1.1rem;
-    letter-spacing: .2em;
-    color: var(--accent);
-  }
-  .nav-links {
-    display: flex;
-    gap: 36px;
-    list-style: none;
-  }
-  .nav-links a {
-    font-family: var(--mono);
-    font-size: .75rem;
-    letter-spacing: .15em;
-    color: var(--dim);
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: color .2s;
-  }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 52px; height: 62px; background: rgba(8,10,13,.9); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  nav::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: .4; }
+  .nav-logo { font-family: var(--mono); font-size: 1rem; letter-spacing: .25em; color: var(--accent); }
+  .nav-logo span { color: var(--white); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: .7rem; letter-spacing: .15em; color: var(--dim); text-decoration: none; text-transform: uppercase; transition: color .2s; }
   .nav-links a:hover { color: var(--accent); }
+  .nav-cta { font-family: var(--mono); font-size: .7rem; letter-spacing: .15em; color: var(--bg); background: var(--accent); padding: 8px 20px; text-decoration: none; transition: opacity .2s; cursor: none; }
+  .nav-cta:hover { opacity: .8; }
 
-  /* ── sections ── */
-  section {
-    position: relative;
-    z-index: 2;
-  }
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 24px 0; position: relative; overflow: hidden; z-index: 2; }
+  .hero-tag { font-family: var(--mono); font-size: .65rem; letter-spacing: .45em; color: var(--accent); text-transform: uppercase; margin-bottom: 28px; opacity: 0; animation: fadeUp .6s .2s forwards; }
+  .hero-title { font-family: var(--mono); font-size: clamp(3rem, 11vw, 9rem); font-weight: 400; letter-spacing: .04em; line-height: 1; color: var(--white); opacity: 0; animation: fadeUp .7s .35s forwards; }
+  .hero-title .ac { color: var(--accent); text-shadow: 0 0 60px rgba(0,229,255,.35); }
+  .hero-sub { font-family: var(--sans); font-size: clamp(.9rem, 2vw, 1.15rem); font-weight: 300; color: var(--dim); letter-spacing: .12em; margin: 28px 0 52px; max-width: 560px; line-height: 1.8; opacity: 0; animation: fadeUp .7s .5s forwards; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; opacity: 0; animation: fadeUp .7s .65s forwards; }
 
-  /* ── hero ── */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 80px 24px 0;
-    overflow: hidden;
-  }
+  .btn { font-family: var(--mono); font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; padding: 14px 36px; border: 1px solid currentColor; transition: all .25s; cursor: none; display: inline-block; }
+  .btn-primary { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+  .btn-primary:hover { background: transparent; color: var(--accent); box-shadow: 0 0 28px rgba(0,229,255,.25); }
+  .btn-ghost { color: var(--dim); background: transparent; border-color: var(--border); }
+  .btn-ghost:hover { color: var(--white); border-color: var(--dim); }
+  .btn-gold { color: var(--bg); background: var(--gold); border-color: var(--gold); }
+  .btn-gold:hover { background: transparent; color: var(--gold); }
 
-  .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: .7rem;
-    letter-spacing: .4em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 24px;
-    opacity: 0;
-    animation: fadeUp .6s .2s forwards;
-  }
+  .ring { position: absolute; border-radius: 50%; border: 1px solid var(--border); pointer-events: none; animation: ring-pulse 5s ease-in-out infinite; }
+  .ring-1 { width: min(700px,95vw); height: min(700px,95vw); top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: .25; }
+  .ring-2 { width: min(450px,65vw); height: min(450px,65vw); top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: .15; border-color: var(--accent); animation-delay: -2.5s; }
+  .ring-3 { width: min(220px,35vw); height: min(220px,35vw); top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: .1; border-color: var(--purple); animation-delay: -1.2s; }
+  @keyframes ring-pulse { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.05)} }
 
-  .hero-title {
-    font-family: var(--mono);
-    font-size: clamp(3.5rem, 10vw, 8rem);
-    font-weight: 400;
-    letter-spacing: .06em;
-    line-height: 1;
-    color: var(--white);
-    margin-bottom: 12px;
-    opacity: 0;
-    animation: fadeUp .7s .35s forwards;
-  }
-  .hero-title span {
-    color: var(--accent);
-    text-shadow: 0 0 40px rgba(0,229,255,.4);
-  }
+  .scroll-down { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0; animation: fadeIn 1s 1.4s forwards; }
+  .scroll-down span { font-family: var(--mono); font-size: .55rem; letter-spacing: .3em; color: var(--dim); }
+  .scroll-line { width: 1px; height: 44px; background: linear-gradient(var(--accent), transparent); animation: line-drop 1.6s ease-in-out infinite; }
+  @keyframes line-drop { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
 
-  .hero-sub {
-    font-family: var(--sans);
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    font-weight: 300;
-    color: var(--dim);
-    letter-spacing: .1em;
-    margin-bottom: 52px;
-    opacity: 0;
-    animation: fadeUp .7s .5s forwards;
-  }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2px; max-width: 1200px; margin: 0 auto; padding: 0 52px 100px; position: relative; z-index: 2; }
+  .stat { padding: 36px 28px; border: 1px solid var(--border); text-align: center; background: var(--panel); }
+  .stat-num { font-family: var(--mono); font-size: 2.5rem; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .stat-lbl { font-family: var(--sans); font-size: .8rem; letter-spacing: .2em; color: var(--dim); text-transform: uppercase; }
 
-  .hero-cta {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    opacity: 0;
-    animation: fadeUp .7s .65s forwards;
-  }
+  .products { padding: 130px 52px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+  .sec-label { font-family: var(--mono); font-size: .62rem; letter-spacing: .4em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+  .accent-bar { width: 48px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin-bottom: 20px; }
+  .sec-title { font-family: var(--sans); font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 700; letter-spacing: .04em; margin-bottom: 64px; }
+  .sec-title em { font-style: normal; color: var(--accent); }
 
-  .btn {
-    font-family: var(--mono);
-    font-size: .8rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    text-decoration: none;
-    padding: 14px 36px;
-    border: 1px solid currentColor;
-    transition: background .2s, color .2s, box-shadow .2s;
-    cursor: none;
-  }
-  .btn-primary {
-    color: var(--bg);
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .btn-primary:hover {
-    background: transparent;
-    color: var(--accent);
-    box-shadow: 0 0 24px rgba(0,229,255,.3);
-  }
-  .btn-ghost {
-    color: var(--dim);
-    background: transparent;
-    border-color: var(--border);
-  }
-  .btn-ghost:hover {
-    color: var(--white);
-    border-color: var(--dim);
-  }
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2px; }
+  .product-card { background: var(--panel); border: 1px solid var(--border); overflow: hidden; position: relative; transition: border-color .3s, transform .3s; }
+  .product-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .product-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .35s; }
+  .product-card:hover::before { transform: scaleX(1); }
+  .product-card.gold-card { border-color: var(--gold); }
+  .product-card.gold-card::before { background: var(--gold); transform: scaleX(1); }
 
-  /* hero circle */
-  .hero-ring {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(600px, 90vw);
-    height: min(600px, 90vw);
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    opacity: .4;
-    pointer-events: none;
-    animation: pulse-ring 4s ease-in-out infinite;
-  }
-  .hero-ring:nth-child(2) {
-    width: min(400px, 60vw);
-    height: min(400px, 60vw);
-    animation-delay: -2s;
-    border-color: rgba(0,229,255,.15);
-  }
+  .product-banner { height: 160px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .product-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, var(--panel)); }
+  .b-cyan   { background: radial-gradient(ellipse at 50% 50%, rgba(0,229,255,.14), transparent 70%), linear-gradient(135deg,#080a0d,#0d1520); }
+  .b-gold   { background: radial-gradient(ellipse at 50% 50%, rgba(251,191,36,.12), transparent 70%), linear-gradient(135deg,#080a0d,#1a1208); }
+  .b-purple { background: radial-gradient(ellipse at 50% 50%, rgba(167,139,250,.12), transparent 70%), linear-gradient(135deg,#080a0d,#120d1a); }
+  .banner-icon { font-size: 3.5rem; position: relative; z-index: 1; }
 
-  @keyframes pulse-ring {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .4; }
-    50%       { transform: translate(-50%, -50%) scale(1.04); opacity: .2; }
-  }
+  .product-body { padding: 28px 28px 32px; }
+  .product-tag { font-family: var(--mono); font-size: .6rem; letter-spacing: .25em; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; }
+  .product-name { font-family: var(--sans); font-size: 1.4rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+  .product-desc { font-family: var(--sans); font-size: .9rem; font-weight: 300; color: var(--dim); line-height: 1.7; margin-bottom: 24px; }
+  .product-price { font-family: var(--mono); font-size: 1.8rem; color: var(--white); margin-bottom: 20px; }
+  .product-price sup { font-size: .8rem; vertical-align: top; margin-top: 5px; color: var(--dim); }
+  .product-price .period { font-size: .75rem; color: var(--dim); }
+  .product-feats { list-style: none; margin-bottom: 28px; }
+  .product-feats li { font-family: var(--sans); font-size: .88rem; color: var(--dim); padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .product-feats li::before { content: '→'; color: var(--accent); font-family: var(--mono); font-size: .75rem; flex-shrink: 0; }
 
-  /* scroll indicator */
-  .scroll-hint {
-    position: absolute;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    animation: fadeIn 1s 1.5s forwards;
-  }
-  .scroll-hint span {
-    font-family: var(--mono);
-    font-size: .6rem;
-    letter-spacing: .25em;
-    color: var(--dim);
-  }
-  .scroll-line {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(var(--accent), transparent);
-    animation: scroll-drop 1.5s ease-in-out infinite;
-  }
-  @keyframes scroll-drop {
-    0%   { transform: scaleY(0); transform-origin: top; }
-    50%  { transform: scaleY(1); transform-origin: top; }
-    51%  { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-  }
+  .badge { position: absolute; top: -1px; right: 24px; font-family: var(--mono); font-size: .58rem; letter-spacing: .2em; padding: 4px 10px; }
 
-  /* ── features ── */
-  .features {
-    padding: 120px 48px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
+  .how { padding: 100px 52px; background: var(--panel); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; z-index: 2; }
+  .how-inner { max-width: 1100px; margin: 0 auto; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; margin-top: 64px; }
+  .step { padding: 36px 28px; border: 1px solid var(--border); position: relative; }
+  .step-num { font-family: var(--mono); font-size: 3.5rem; color: var(--border); line-height: 1; margin-bottom: 20px; }
+  .step-title { font-family: var(--sans); font-size: 1rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+  .step-desc { font-family: var(--sans); font-size: .9rem; font-weight: 300; color: var(--dim); line-height: 1.7; }
+  .step-arrow { position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-family: var(--mono); color: var(--accent); font-size: 1.1rem; background: var(--panel); padding: 4px; z-index: 1; }
 
-  .section-label {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .4em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .section-title {
-    font-family: var(--sans);
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    font-weight: 700;
-    letter-spacing: .04em;
-    margin-bottom: 64px;
-    color: var(--white);
-  }
-  .section-title em {
-    font-style: normal;
-    color: var(--accent);
-  }
+  .cta-section { padding: 130px 52px; text-align: center; position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+  .cta-section h2 { font-family: var(--sans); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700; letter-spacing: .04em; margin-bottom: 20px; }
+  .cta-section p { font-family: var(--sans); font-size: .95rem; font-weight: 300; color: var(--dim); line-height: 1.8; margin-bottom: 48px; }
 
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2px;
-  }
+  footer { border-top: 1px solid var(--border); position: relative; z-index: 2; }
+  footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: .3; }
+  .footer-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 40px; padding: 60px 52px 40px; }
+  .foot-logo { font-family: var(--mono); font-size: 1rem; letter-spacing: .25em; color: var(--accent); margin-bottom: 10px; }
+  .footer-brand p { font-family: var(--sans); font-size: .85rem; color: var(--dim); max-width: 240px; line-height: 1.7; }
+  .footer-col h4 { font-family: var(--mono); font-size: .65rem; letter-spacing: .25em; color: var(--dim); text-transform: uppercase; margin-bottom: 16px; }
+  .footer-col a { display: block; font-family: var(--sans); font-size: .9rem; color: var(--dim); text-decoration: none; margin-bottom: 10px; transition: color .2s; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom { border-top: 1px solid var(--border); padding: 20px 52px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-bottom p { font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; color: var(--dim); }
 
-  .feature-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 36px 32px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color .3s, transform .3s;
-  }
-  .feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 2px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform .3s;
-  }
-  .feature-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .feature-card:hover::before { transform: scaleX(1); }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal:nth-child(2){transition-delay:.1s} .reveal:nth-child(3){transition-delay:.2s} .reveal:nth-child(4){transition-delay:.3s}
 
-  .feature-num {
-    font-family: var(--mono);
-    font-size: .65rem;
-    color: var(--dim);
-    letter-spacing: .2em;
-    margin-bottom: 20px;
-  }
-  .feature-icon {
-    font-size: 1.6rem;
-    margin-bottom: 16px;
-    display: block;
-  }
-  .feature-title {
-    font-family: var(--sans);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: .08em;
-    margin-bottom: 12px;
-    color: var(--white);
-    text-transform: uppercase;
-  }
-  .feature-desc {
-    font-family: var(--sans);
-    font-size: .95rem;
-    font-weight: 300;
-    color: var(--dim);
-    line-height: 1.7;
-  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  @keyframes fadeIn  { to{opacity:1} }
 
-  /* ── pricing ── */
-  .pricing {
-    padding: 120px 48px;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .pricing-inner {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    margin-top: 64px;
-  }
-
-  .price-card {
-    border: 1px solid var(--border);
-    padding: 40px 32px;
-    position: relative;
-    transition: border-color .3s;
-  }
-  .price-card.featured {
-    border-color: var(--accent);
-    background: rgba(0,229,255,.04);
-  }
-  .price-card.featured::after {
-    content: 'POPULAR';
-    position: absolute;
-    top: -1px; right: 24px;
-    background: var(--accent);
-    color: var(--bg);
-    font-family: var(--mono);
-    font-size: .6rem;
-    letter-spacing: .2em;
-    padding: 4px 10px;
-  }
-
-  .price-name {
-    font-family: var(--mono);
-    font-size: .7rem;
-    letter-spacing: .3em;
-    color: var(--dim);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-  }
-  .price-amount {
-    font-family: var(--mono);
-    font-size: 3rem;
-    color: var(--white);
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-  .price-amount sup {
-    font-size: 1.2rem;
-    vertical-align: top;
-    margin-top: 8px;
-    color: var(--dim);
-  }
-  .price-period {
-    font-family: var(--sans);
-    font-size: .85rem;
-    color: var(--dim);
-    margin-bottom: 32px;
-  }
-  .price-features {
-    list-style: none;
-    margin-bottom: 36px;
-  }
-  .price-features li {
-    font-family: var(--sans);
-    font-size: .95rem;
-    font-weight: 300;
-    color: var(--dim);
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .price-features li::before {
-    content: '→';
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: .8rem;
-    flex-shrink: 0;
-  }
-  .price-features li.muted { opacity: .35; }
-  .price-features li.muted::before { content: '×'; color: var(--dim); }
-
-  /* ── stats bar ── */
-  .stats {
-    padding: 80px 48px;
-    max-width: 1100px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2px;
-  }
-  .stat {
-    padding: 40px 32px;
-    border: 1px solid var(--border);
-    text-align: center;
-  }
-  .stat-num {
-    font-family: var(--mono);
-    font-size: 2.8rem;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .stat-label {
-    font-family: var(--sans);
-    font-size: .85rem;
-    letter-spacing: .15em;
-    color: var(--dim);
-    text-transform: uppercase;
-  }
-
-  /* ── footer ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 24px;
-    position: relative;
-    z-index: 2;
-  }
-  footer::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: .3;
-  }
-  .footer-logo {
-    font-family: var(--mono);
-    font-size: .9rem;
-    letter-spacing: .25em;
-    color: var(--accent);
-  }
-  .footer-copy {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .1em;
-    color: var(--dim);
-  }
-
-  /* ── animations ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    to { opacity: 1; }
-  }
-
-  /* ── reveal on scroll ── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity .7s, transform .7s;
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: none;
-  }
-  .reveal:nth-child(2) { transition-delay: .1s; }
-  .reveal:nth-child(3) { transition-delay: .2s; }
-  .reveal:nth-child(4) { transition-delay: .3s; }
-
-  /* ── accent line ── */
-  .accent-line {
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    margin-bottom: 24px;
-    width: 60px;
-  }
-
-  /* responsive */
-  @media (max-width: 640px) {
-    nav { padding: 0 20px; }
-    .features, .pricing, .stats, footer { padding: 80px 20px; }
-    .nav-links { display: none; }
+  @media(max-width:640px) {
+    nav{padding:0 20px} .nav-links{display:none}
+    .products,.how,.stats-row,.cta-section{padding-left:20px;padding-right:20px}
+    .footer-top,.footer-bottom{padding:40px 20px}
   }
 </style>
 </head>
 <body>
 
-<!-- custom cursor -->
 <div id="cursor">
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="16" cy="16" r="7" stroke="#00e5ff" stroke-width="1"/>
-    <line x1="16" y1="0"  x2="16" y2="8"  stroke="#00e5ff" stroke-width="1"/>
-    <line x1="16" y1="24" x2="16" y2="32" stroke="#00e5ff" stroke-width="1"/>
-    <line x1="0"  y1="16" x2="8"  y2="16" stroke="#00e5ff" stroke-width="1"/>
-    <line x1="24" y1="16" x2="32" y2="16" stroke="#00e5ff" stroke-width="1"/>
-    <circle cx="16" cy="16" r="1.5" fill="#00e5ff"/>
+  <svg viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="6" stroke="#00e5ff" stroke-width="1"/>
+    <line x1="14" y1="0"  x2="14" y2="7"  stroke="#00e5ff" stroke-width="1"/>
+    <line x1="14" y1="21" x2="14" y2="28" stroke="#00e5ff" stroke-width="1"/>
+    <line x1="0"  y1="14" x2="7"  y2="14" stroke="#00e5ff" stroke-width="1"/>
+    <line x1="21" y1="14" x2="28" y2="14" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="14" cy="14" r="1.2" fill="#00e5ff"/>
   </svg>
 </div>
 
-<!-- nav -->
 <nav>
-  <div class="nav-logo">SPOOKOLOR</div>
+  <div class="nav-logo">SPOOKY<span>STORE</span></div>
   <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#get">Get Access</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="keys.html">My Keys</a></li>
   </ul>
+  <a href="#products" class="nav-cta">Shop Now</a>
 </nav>
 
-<!-- hero -->
 <section class="hero">
-  <div class="hero-ring"></div>
-  <div class="hero-ring"></div>
-
-  <p class="hero-eyebrow">precision targeting software</p>
-  <h1 class="hero-title">SPOOK<span>OLOR</span></h1>
-  <p class="hero-sub">Color-based aim assistance. Real-time. Undetected.</p>
-
-  <div class="hero-cta">
-    <a href="#pricing" class="btn btn-primary">Get Access</a>
-    <a href="#features" class="btn btn-ghost">Learn More</a>
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="ring ring-3"></div>
+  <p class="hero-tag">// precision software store</p>
+  <h1 class="hero-title">SPOOKY<span class="ac">STORE</span></h1>
+  <p class="hero-sub">Premium aim assistance software. Licensed. Undetected. Instant key delivery.</p>
+  <div class="hero-btns">
+    <a href="#products" class="btn btn-primary">Browse Products</a>
+    <a href="keys.html" class="btn btn-ghost">My License</a>
   </div>
-
-  <div class="scroll-hint">
-    <span>scroll</span>
-    <div class="scroll-line"></div>
-  </div>
+  <div class="scroll-down"><span>scroll</span><div class="scroll-line"></div></div>
 </section>
 
-<!-- stats -->
-<div class="stats" id="features">
-  <div class="stat reveal">
-    <div class="stat-num" data-target="60">0</div>
-    <div class="stat-label">FPS Loop</div>
-  </div>
-  <div class="stat reveal">
-    <div class="stat-num" data-target="4">0</div>
-    <div class="stat-label">Input Methods</div>
-  </div>
-  <div class="stat reveal">
-    <div class="stat-num" data-target="1000">0</div>
-    <div class="stat-label">Max FOV</div>
-  </div>
-  <div class="stat reveal">
-    <div class="stat-num" data-target="100">0</div>
-    <div class="stat-label">% Customizable</div>
-  </div>
+<div class="stats-row" id="products">
+  <div class="stat reveal"><div class="stat-num" data-target="1200" data-suffix="+">0</div><div class="stat-lbl">Active Users</div></div>
+  <div class="stat reveal"><div class="stat-num" data-target="99" data-suffix="%">0</div><div class="stat-lbl">Uptime</div></div>
+  <div class="stat reveal"><div class="stat-num" data-target="4" data-suffix="">0</div><div class="stat-lbl">Input Methods</div></div>
+  <div class="stat reveal"><div class="stat-num" data-target="24" data-suffix="/7">0</div><div class="stat-lbl">Support</div></div>
 </div>
 
-<!-- features -->
-<section class="features">
+<section class="products">
   <div class="reveal">
-    <p class="section-label">// capabilities</p>
-    <div class="accent-line"></div>
-    <h2 class="section-title">Built for <em>precision</em></h2>
+    <p class="sec-label">// products</p>
+    <div class="accent-bar"></div>
+    <h2 class="sec-title">Choose your <em>weapon</em></h2>
   </div>
+  <div class="product-grid">
 
-  <div class="features-grid">
-    <div class="feature-card reveal">
-      <div class="feature-num">01</div>
-      <span class="feature-icon">◎</span>
-      <div class="feature-title">Color Detection</div>
-      <p class="feature-desc">HSV-based target detection with configurable color ranges. Finds targets faster than any pixel-scan method.</p>
+    <div class="product-card reveal">
+      <div class="product-banner b-cyan"><div class="banner-icon">◎</div></div>
+      <div class="product-body">
+        <div class="product-tag">colorbot · monthly</div>
+        <div class="product-name">Spookolor</div>
+        <p class="product-desc">HSV-based color aim assist with live GUI, triggerbot, recoil control and full key bind configuration.</p>
+        <div class="product-price"><sup>€</sup>9<span class="period">.99 / mo</span></div>
+        <ul class="product-feats">
+          <li>Real-time FOV &amp; aim sliders</li>
+          <li>Triggerbot with random delay</li>
+          <li>Live key rebind — no restart</li>
+          <li>FOV overlay circle</li>
+          <li>WinAPI + Interception support</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%;text-align:center;">Get Spookolor</a>
+      </div>
     </div>
-    <div class="feature-card reveal">
-      <div class="feature-num">02</div>
-      <span class="feature-icon">⊹</span>
-      <div class="feature-title">Smooth Aim</div>
-      <p class="feature-desc">Exponential smoothing with configurable factor. Natural-looking movement that doesn't snap.</p>
+
+    <div class="product-card gold-card reveal">
+      <div class="badge" style="background:var(--gold);color:var(--bg);">BEST VALUE</div>
+      <div class="product-banner b-gold"><div class="banner-icon">⬡</div></div>
+      <div class="product-body">
+        <div class="product-tag">bundle · lifetime</div>
+        <div class="product-name">Lifetime Bundle</div>
+        <p class="product-desc">One payment. Every current and future product. The only purchase you'll ever need.</p>
+        <div class="product-price"><sup>€</sup>39<span class="period"> one-time</span></div>
+        <ul class="product-feats">
+          <li>Everything in Spookolor</li>
+          <li>All future products included</li>
+          <li>Priority support</li>
+          <li>Early access to updates</li>
+          <li>Hardware mouse support</li>
+        </ul>
+        <a href="#" class="btn btn-gold" style="width:100%;text-align:center;">Get Lifetime</a>
+      </div>
     </div>
-    <div class="feature-card reveal">
-      <div class="feature-num">03</div>
-      <span class="feature-icon">⌖</span>
-      <div class="feature-title">Triggerbot</div>
-      <p class="feature-desc">Automatic fire when crosshair overlaps a target. Configurable delay and randomization for natural timing.</p>
+
+    <div class="product-card reveal">
+      <div class="product-banner b-purple"><div class="banner-icon">⟳</div></div>
+      <div class="product-body">
+        <div class="product-tag">trial · free</div>
+        <div class="product-name">Free Trial</div>
+        <p class="product-desc">Test drive the full Spookolor feature set for 3 days. No restrictions. No commitment.</p>
+        <div class="product-price"><sup>€</sup>0<span class="period"> / 3 days</span></div>
+        <ul class="product-feats">
+          <li>Full Spookolor access</li>
+          <li>All features unlocked</li>
+          <li>Community support</li>
+          <li>Instant key delivery</li>
+        </ul>
+        <a href="#" class="btn btn-ghost" style="width:100%;text-align:center;">Start Free Trial</a>
+      </div>
     </div>
-    <div class="feature-card reveal">
-      <div class="feature-num">04</div>
-      <span class="feature-icon">⟳</span>
-      <div class="feature-title">Live Config</div>
-      <p class="feature-desc">Change FOV, speed, smoothness and key binds in real time. No restart. No downtime.</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="feature-num">05</div>
-      <span class="feature-icon">⬡</span>
-      <div class="feature-title">Multiple Inputs</div>
-      <p class="feature-desc">WinAPI, Interception driver, serial microcontroller, or socket-based hardware mouse emulation.</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="feature-num">06</div>
-      <span class="feature-icon">◈</span>
-      <div class="feature-title">FOV Overlay</div>
-      <p class="feature-desc">Transparent on-screen circle showing your exact capture zone. Toggle with one click.</p>
-    </div>
+
   </div>
 </section>
 
-<!-- pricing -->
-<section class="pricing" id="pricing">
-  <div class="pricing-inner">
+<section class="how" id="how">
+  <div class="how-inner">
     <div class="reveal">
-      <p class="section-label">// access tiers</p>
-      <div class="accent-line"></div>
-      <h2 class="section-title">Simple <em>pricing</em></h2>
+      <p class="sec-label">// how it works</p>
+      <div class="accent-bar"></div>
+      <h2 class="sec-title">Up and running in <em>minutes</em></h2>
     </div>
-
-    <div class="pricing-grid">
-      <div class="price-card reveal">
-        <div class="price-name">Trial</div>
-        <div class="price-amount"><sup>€</sup>0</div>
-        <div class="price-period">3 days free</div>
-        <ul class="price-features">
-          <li>Full feature access</li>
-          <li>FOV &amp; aim controls</li>
-          <li>Basic key binds</li>
-          <li class="muted">Priority support</li>
-          <li class="muted">Early updates</li>
-        </ul>
-        <a href="#get" class="btn btn-ghost" style="display:block;text-align:center;">Start Trial</a>
-      </div>
-
-      <div class="price-card featured reveal">
-        <div class="price-name">Monthly</div>
-        <div class="price-amount"><sup>€</sup>9<span style="font-size:1.2rem;color:var(--dim)">.99</span></div>
-        <div class="price-period">per month</div>
-        <ul class="price-features">
-          <li>Full feature access</li>
-          <li>FOV &amp; aim controls</li>
-          <li>Full key bind config</li>
-          <li>Priority support</li>
-          <li>Early updates</li>
-        </ul>
-        <a href="#get" class="btn btn-primary" style="display:block;text-align:center;">Get Access</a>
-      </div>
-
-      <div class="price-card reveal">
-        <div class="price-name">Lifetime</div>
-        <div class="price-amount"><sup>€</sup>39</div>
-        <div class="price-period">one-time</div>
-        <ul class="price-features">
-          <li>Full feature access</li>
-          <li>FOV &amp; aim controls</li>
-          <li>Full key bind config</li>
-          <li>Priority support</li>
-          <li>All future updates</li>
-        </ul>
-        <a href="#get" class="btn btn-ghost" style="display:block;text-align:center;">Buy Lifetime</a>
-      </div>
+    <div class="steps">
+      <div class="step reveal"><div class="step-num">01</div><div class="step-title">Purchase</div><p class="step-desc">Pick a plan and complete checkout. Your license key is generated and delivered instantly.</p><div class="step-arrow">→</div></div>
+      <div class="step reveal"><div class="step-num">02</div><div class="step-title">Activate</div><p class="step-desc">Open Spookolor. Enter your key in the license screen. Validated server-side in under a second.</p><div class="step-arrow">→</div></div>
+      <div class="step reveal"><div class="step-num">03</div><div class="step-title">Configure</div><p class="step-desc">Set FOV, aim speed, smoothness and key binds using the live GUI. Changes apply instantly.</p><div class="step-arrow">→</div></div>
+      <div class="step reveal"><div class="step-num">04</div><div class="step-title">Play</div><p class="step-desc">Hold your aim key. Spookolor locks onto targets. You focus on the game.</p></div>
     </div>
   </div>
 </section>
 
-<!-- get access -->
-<section style="padding:120px 48px;max-width:680px;margin:0 auto;text-align:center;position:relative;z-index:2;" id="get">
+<section class="cta-section" id="get">
   <div class="reveal">
-    <p class="section-label">// get started</p>
-    <div class="accent-line" style="margin:0 auto 24px;"></div>
-    <h2 class="section-title">Ready to <em>lock in</em>?</h2>
-    <p style="font-family:var(--sans);font-size:1rem;color:var(--dim);line-height:1.8;margin-bottom:48px;">
-      Join via Discord to purchase a license key. Keys are delivered instantly and validated server-side.
-    </p>
-    <a href="#" class="btn btn-primary" style="font-size:.9rem;padding:16px 52px;">
-      Join Discord →
-    </a>
+    <p class="sec-label" style="text-align:center">// get started</p>
+    <div class="accent-bar" style="margin:0 auto 20px;"></div>
+    <h2>Ready to <em style="font-style:normal;color:var(--accent)">lock on</em>?</h2>
+    <p>Join thousands of users who trust Spookolor. Purchase takes 30 seconds. Key delivered instantly.</p>
+    <a href="#products" class="btn btn-primary" style="font-size:.85rem;padding:16px 52px;">Shop Now →</a>
   </div>
 </section>
 
-<!-- footer -->
 <footer>
-  <div class="footer-logo">SPOOKOLOR</div>
-  <div class="footer-copy">© 2025 spook. — for educational purposes only.</div>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="foot-logo">SPOOKYSTORE</div>
+      <p>Premium aim software. Reliable. Fast. Undetected.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <a href="#">Spookolor</a>
+      <a href="#">Lifetime Bundle</a>
+      <a href="#">Free Trial</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <a href="keys.html">My License Keys</a>
+      <a href="#">Support</a>
+      <a href="#">Discord</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Terms of Service</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Refund Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 SPOOKYSTORE — for educational purposes only.</p>
+    <p>spook.</p>
+  </div>
 </footer>
 
 <script>
-  // ── cursor ──
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top  = e.clientY + 'px';
-  });
-  document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
-  document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
-
-  // scale cursor on clickable elements
-  document.querySelectorAll('a, button, .btn, .feature-card, .price-card').forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.style.transform = 'translate(-50%,-50%) scale(1.5)');
-    el.addEventListener('mouseleave', () => cursor.style.transform = 'translate(-50%,-50%) scale(1)');
+  const cur = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px'; });
+  document.addEventListener('mouseleave', ()=> cur.style.opacity='0');
+  document.addEventListener('mouseenter', ()=> cur.style.opacity='1');
+  document.querySelectorAll('a,button,.product-card,.step,.stat').forEach(el=>{
+    el.addEventListener('mouseenter',()=> cur.style.transform='translate(-50%,-50%) scale(1.6)');
+    el.addEventListener('mouseleave',()=> cur.style.transform='translate(-50%,-50%) scale(1)');
   });
 
-  // ── scroll reveal ──
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  const obs = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-  // ── count up animation ──
-  const countObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target.querySelector('[data-target]');
-      if (!el || el._counted) return;
-      el._counted = true;
-      const target = +el.dataset.target;
-      const suffix = el.dataset.suffix || (target === 100 ? '%' : target >= 1000 ? 'px' : '');
-      let start = 0;
-      const step = target / 40;
-      const interval = setInterval(() => {
-        start = Math.min(start + step, target);
-        el.textContent = Math.floor(start) + suffix;
-        if (start >= target) clearInterval(interval);
-      }, 30);
+  const cobs = new IntersectionObserver(es=>{
+    es.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const el=entry.target.querySelector('[data-target]');
+      if(!el||el._done)return; el._done=true;
+      const target=+el.dataset.target, suffix=el.dataset.suffix||'';
+      let v=0; const step=target/45;
+      const iv=setInterval(()=>{ v=Math.min(v+step,target); el.textContent=Math.floor(v)+suffix; if(v>=target)clearInterval(iv); },28);
     });
-  }, { threshold: 0.5 });
-  document.querySelectorAll('.stat').forEach(el => countObserver.observe(el));
+  },{threshold:.5});
+  document.querySelectorAll('.stat').forEach(el=>cobs.observe(el));
 </script>
 </body>
 </html>
